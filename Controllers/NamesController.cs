@@ -13,25 +13,44 @@ namespace NamesApi.Controllers
     [ApiController]
     public class NamesController : ControllerBase
     {
-        private readonly NamesContext _context;
+        private readonly NamesContext _dbContext;
+
+        // TODO: get this from loggied in user
+        public static string USER_LAST_NAME = "Newsom";
 
         public NamesController(NamesContext context)
         {
-            _context = context;
+            _dbContext = context;
         }
 
         // GET: api/Names
         [HttpGet]
         public async Task<ActionResult<IEnumerable<NameEntry>>> GetNames()
         {
-            return await _context.Names.ToListAsync();
+            return await _dbContext.Names.ToListAsync();
+        }
+
+        [HttpGet("first")]
+        public async Task<ActionResult<IEnumerable<NameEntry>>> GetFirstNames()
+        {
+            return await GetFirstNamesAsync();
+        }
+        [HttpGet("middle")]
+        public async Task<ActionResult<IEnumerable<NameEntry>>> GetMiddleNames()
+        {
+            return await GetMiddleNamesAsync();
+        }
+        [HttpGet("random")]
+        public async Task<ActionResult<string>> GetRandomName()
+        {
+            return await GetRandomNameAsync();
         }
 
         // GET: api/Names/5
         [HttpGet("{id}")]
         public async Task<ActionResult<NameEntry>> GetNameEntry(int id)
         {
-            var nameEntry = await _context.Names.FindAsync(id);
+            var nameEntry = await _dbContext.Names.FindAsync(id);
 
             if (nameEntry == null)
             {
@@ -52,11 +71,11 @@ namespace NamesApi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(nameEntry).State = EntityState.Modified;
+            _dbContext.Entry(nameEntry).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -79,8 +98,8 @@ namespace NamesApi.Controllers
         [HttpPost]
         public async Task<ActionResult<NameEntry>> PostNameEntry(NameEntry nameEntry)
         {
-            _context.Names.Add(nameEntry);
-            await _context.SaveChangesAsync();
+            _dbContext.Names.Add(nameEntry);
+            await _dbContext.SaveChangesAsync();
 
             return CreatedAtAction("GetNameEntry", new { id = nameEntry.Id }, nameEntry);
         }
@@ -89,21 +108,48 @@ namespace NamesApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<NameEntry>> DeleteNameEntry(int id)
         {
-            var nameEntry = await _context.Names.FindAsync(id);
+            var nameEntry = await _dbContext.Names.FindAsync(id);
             if (nameEntry == null)
             {
                 return NotFound();
             }
 
-            _context.Names.Remove(nameEntry);
-            await _context.SaveChangesAsync();
+            _dbContext.Names.Remove(nameEntry);
+            await _dbContext.SaveChangesAsync();
 
             return nameEntry;
         }
-
+        // DB Queries:
+        // TODO break queries into  DDD model, use this design: https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/net-core-microservice-domain-model    
+        
         private bool NameEntryExists(int id)
         {
-            return _context.Names.Any(e => e.Id == id);
+            return _dbContext.Names.Any(e => e.Id == id);
+        }
+
+        public async Task<List<NameEntry>> GetFirstNamesAsync()
+        {
+            var result = await _dbContext.Names.Where(n => n.Weight < .5f).OrderBy(n => n.Name).ToListAsync();
+            return result;
+        }
+        public async Task<List<NameEntry>> GetMiddleNamesAsync()
+        {
+            var result = await _dbContext.Names.Where(n => n.Weight >= .5f).ToListAsync();
+            return result;
+        }
+        public async Task<string> GetRandomNameAsync()
+        {
+            // TODO: randomly get a first name, but make first-name-weightedness more likely
+            // FOR NOW: randomly grab first name w > 50% first-name-weightedness
+            Random r = new Random();
+
+            var firstNames = await _dbContext.Names.Where(n => n.Weight != 1.0f).Select(n => n.Name).ToArrayAsync();
+            string rFirstName = firstNames[r.Next(firstNames.Length)];
+
+            var middleNames = await _dbContext.Names.Where(n => n.Name != rFirstName).Where(n => n.Weight != 0.0f).Select(n => n.Name).ToArrayAsync();
+            string rMiddle = middleNames[r.Next(middleNames.Length)];
+
+            return $"{rFirstName} {rMiddle} {USER_LAST_NAME}";
         }
     }
 }
