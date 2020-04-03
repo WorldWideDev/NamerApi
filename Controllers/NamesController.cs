@@ -129,7 +129,7 @@ namespace NamesApi.Controllers
 
         public async Task<List<NameEntry>> GetFirstNamesAsync()
         {
-            var result = await _dbContext.Names.Where(n => n.Weight < .5f).OrderBy(n => n.Name).ToListAsync();
+            var result = await _dbContext.Names.Where(n => n.Weight <= .5f).OrderBy(n => n.Name).ToListAsync();
             return result;
         }
         public async Task<List<NameEntry>> GetMiddleNamesAsync()
@@ -146,7 +146,8 @@ namespace NamesApi.Controllers
             var firstNames = await _dbContext.Names.Where(n => n.Weight != 1.0f).Select(n => n.Name).ToArrayAsync();
             string rFirstName = firstNames[r.Next(firstNames.Length)];
 
-            var middleNames = await _dbContext.Names.Where(n => n.Name != rFirstName).Where(n => n.Weight != 0.0f).Select(n => n.Name).ToArrayAsync();
+            // var middleNames = await _dbContext.Names.Where(n => n.Name != rFirstName);
+            var middleNames = await _dbContext.Names.Where(n => n.Name != rFirstName).Where(n => n.Weight != 0f).Select(n => n.Name).ToArrayAsync();
             string rMiddle = middleNames[r.Next(middleNames.Length)];
 
             return $"{rFirstName} {rMiddle} {USER_LAST_NAME}";
