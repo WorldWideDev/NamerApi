@@ -1,17 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using NamesApi.Models;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 
 namespace NamesApi
 {
@@ -36,8 +32,14 @@ namespace NamesApi
                         .WithOrigins("http://localhost:3000");
                 });
             });
-            services.AddDbContext<NamesContext>(options => options.UseMySql(Configuration["DBInfo:ConnectionString"]));
-            services.AddControllers();
+            services.AddDbContext<NamesDbContext>(options => options.UseMySql(Configuration["DBInfo:ConnectionString"]));
+            services.AddScoped<INamesRepository, EFNamesRepository>();
+            services.AddControllers()
+                .ConfigureApiBehaviorOptions(options => 
+                {
+                    options.SuppressModelStateInvalidFilter = true;
+                })
+                .AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

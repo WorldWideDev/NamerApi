@@ -11,8 +11,8 @@ namespace NamesApi.Services
     // FOR NOW: Write quries on Business Entity right here in this dumb class.
     public class NamesService
     {
-        private NamesContext _dbContext;
-        public NamesService(NamesContext context)
+        private NamesDbContext _dbContext;
+        public NamesService(NamesDbContext context)
         {
             _dbContext = context;
         }
