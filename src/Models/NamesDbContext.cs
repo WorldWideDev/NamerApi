@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace NamesApi.Models
 {
-    public class NamesContext : DbContext
+    public class NamesDbContext : DbContext
     {
-        public NamesContext(DbContextOptions options) : base(options) {}
+        public NamesDbContext(DbContextOptions options) : base(options) {}
         public DbSet<NameEntry> Names {get;set;}
         
     }
