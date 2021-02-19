@@ -60,6 +60,7 @@ namespace NamesApi
             {
                 endpoints.MapControllers();
             });
+            SeedData.EnsurePopulated(app);
         }
     }
 }
