@@ -15,19 +15,19 @@ namespace NamesApi.Tests
             Mock<INamesRepository> mock = new Mock<INamesRepository>();
             NameEntry[] namesMock = new NameEntry[]
             {
-                new NameEntry { Name = "Dax", Weight = 0.07f },
-                new NameEntry { Name = "Devon", Weight = 0.2f },
-                new NameEntry { Name = "Michael", Weight = 0.5f },
-                new NameEntry { Name = "Bruce", Weight = 0.15f },
-                new NameEntry { Name = "Desmond", Weight = 0.0f },
-                new NameEntry { Name = "John", Weight = 0.5f }
+                new NameEntry { Id = 1, Name = "Dax", Weight = 0.07f },
+                new NameEntry { Id = 3, Name = "Devon", Weight = 0.2f },
+                new NameEntry { Id = 2, Name = "Michael", Weight = 0.6f },
+                new NameEntry { Id = 4, Name = "Bruce", Weight = 0.15f },
+                new NameEntry { Id = 5, Name = "Desmond", Weight = 0.0f },
+                new NameEntry { Id = 6, Name = "John", Weight = 0.5f }
             };
             mock.Setup(m => m.Names).Returns(namesMock.AsQueryable<NameEntry>());
 
             NamesController controller = new NamesController(mock.Object);
 
             // Act
-            IEnumerable<NameEntry> result = controller.GetNames(null);
+            IEnumerable<NameEntry> result = controller.GetNames();
 
             // Assert
             NameEntry[] nameArray = result.ToArray();

@@ -25,20 +25,21 @@ namespace NamesApi.Controllers
             _repository = repository;
         }
 
-        // GET: api/Names
-        [HttpGet("{nameType?}")]
-        public IEnumerable<NameEntry> GetNames([FromQuery]string nameType)
+        // GET: api/names
+        [HttpGet("")]
+        public IEnumerable<NameEntry> GetNames() => _repository.Names;
+        // GET: api/names/{type}
+        [HttpGet("type/{nameType}")]
+        public IEnumerable<NameEntry> GetNames(string nameType)
         {
             switch(nameType)
             {
                 case "middle":
                     return _repository.Names.Where(n => n.Weight >= .5f);
-                case "first":
+                default:
                     return _repository.Names
                         .Where(n => n.Weight <= .5f)
                         .OrderBy(n => n.Name);
-                default:
-                    return _repository.Names;
             }
         }
         [HttpGet("random")]
