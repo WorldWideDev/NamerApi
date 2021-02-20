@@ -19,6 +19,10 @@ namespace NamesApi.Models
             NameEntry n = await context.Names.FindAsync(id);
             return n != null;
         }
+        public bool NameEntryExists(string name)
+        {
+            return context.Names.Any(n => n.Name == name);
+        }
         public IEnumerable<NameEntry> GetMiddleNames()
         {
             return Names.Where(n => n.Weight >= .5f);
@@ -37,6 +41,7 @@ namespace NamesApi.Models
         }
         public async Task<NameEntry> UpdateName(NameEntry p)
         {
+            p.CreatedAt = DateTime.Now;
             context.Names.Update(p);
             await context.SaveChangesAsync();
             return p;

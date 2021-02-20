@@ -6,6 +6,7 @@ namespace NamesApi.Models
     {
         IEnumerable<NameEntry> Names {get;}
         Task<bool> NameEntryExists(int id);
+        bool NameEntryExists(string name);
         Task<NameEntry> UpdateName(NameEntry n);
         Task<NameEntry> GetName(int id);
         Task<NameEntry> CreateName(NameEntry n);

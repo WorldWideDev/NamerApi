@@ -1,4 +1,5 @@
 using System;
+using NamesApi.Models.Validators;
 using System.ComponentModel.DataAnnotations;
 
 namespace NamesApi.Models
@@ -8,6 +9,7 @@ namespace NamesApi.Models
         [Key]
         public int Id {get;set;}
         [Required]
+        [NameEntryExists]
         public string Name {get;set;}
         [Required]
         [Range(0.0,1.0)]
