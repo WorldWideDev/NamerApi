@@ -93,34 +93,5 @@ namespace NamesApi.Tests
             Assert.Equal("Michael", nameArray[0].Name);
             Assert.Equal("John", nameArray[1].Name);
         }
-        [Fact]
-        public async void Can_Post_New_Name()
-        {
-            // Arrange
-            Mock<INamesRepository> mock = new Mock<INamesRepository>();
-            NameEntry[] namesMock = new NameEntry[]
-            {
-                new NameEntry { Id = 1, Name = "Dax", Weight = 0.07f },
-                new NameEntry { Id = 2, Name = "Michael", Weight = 0.6f },
-                new NameEntry { Id = 3, Name = "Devon", Weight = 0.2f },
-                new NameEntry { Id = 4, Name = "Bruce", Weight = 0.15f },
-                new NameEntry { Id = 5, Name = "Desmond", Weight = 0.0f },
-                new NameEntry { Id = 6, Name = "John", Weight = 0.5f }
-            };
-            mock.Setup(m => m.Names).Returns(namesMock.AsQueryable<NameEntry>());
-
-            NamesController controller = new NamesController(mock.Object);
-            
-            // Act
-            NameEntry newName = new NameEntry
-            {
-                Id = 7, Name = "Test", Weight = 0.5f
-            };
-            
-            await controller.PostNameEntry(newName);
-
-            // Assert
-
-        }
     }
 }
